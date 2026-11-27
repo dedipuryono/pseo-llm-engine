@@ -53,7 +53,7 @@ const faqSchema = {
     </div>
   </section>
 
-  <section class="card" id="ctxCalculator" data-weight={entry.vram_q4_km_gb} data-kv8k={entry.kv_cache_8k_gb} data-vram={entry.vram_gb}>
+  <section class="card" id="ctxCalculator" data-weight={entry.vram_q4_km_gb} data-kv8k={entry.kv_cache_8k_gb} data-vram={entry.vram_gb} data-runpod={runpodUrl} data-vast={vastUrl}>
     <h2 style="margin-top:0;font-size:1.2rem;">Interactive Context Length &amp; KV-Cache Calculator</h2>
     <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;">
       {[4096, 8192, 16384, 32768, 65536].map((ctx) => (
@@ -61,77 +61,7 @@ const faqSchema = {
       ))}
     </div>
     <div id="ctxResult" style="background:#0b0f17;padding:0.85rem 1rem;border-radius:8px;border:1px solid var(--border);font-size:0.95rem;">
-      At <strong>8K context</strong>: {entry.vram_q4_km_gb} GB weights + {entry.kv_cache_8k_gb} GB KV-cache + 0.85 GB OS = <strong>{entry.total_req_8k_q4_gb} GB</strong> ({entry.vram_gb >= entry.total_req_8k_q4_gb ? 'Fits in VRAM' : 'Exceeds VRAM'}).
-    </div>
-  </section>
-
-  <section class="card" style={`border-color:${isCloud ? 'var(--accent)' : 'var(--green)'};`}>
-    {isCloud ? (
-      <div>
-        <h2 style="margin-top:0;font-size:1.2rem;">Run {entry.model_name} Without Out-of-Memory Errors</h2>
-        <p style="color:var(--muted);">Your <strong>{entry.hw_name} ({entry.vram_gb} GB)</strong> lacks sufficient VRAM for 8K inference. Spin up an on-demand <strong>{entry.cloud_gpu_equivalent}</strong> cloud GPU:</p>
-        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.85rem;">
-          <a href={runpodUrl} target="_blank" rel="nofollow noopener" style="background:var(--accent);color:#0b0f17;font-weight:800;padding:0.7rem 1.15rem;border-radius:8px;">Deploy on RunPod Cloud GPU &rarr;</a>
-          <a href={vastUrl} target="_blank" rel="nofollow noopener" style="background:#1e293b;color:var(--text);font-weight:700;padding:0.7rem 1.15rem;border-radius:8px;border:1px solid var(--border);">Compare Vast.ai Spot GPUs &rarr;</a>
-          <a href="https://pricing.godedi.net/" target="_blank" rel="noopener" style="background:#0b0f17;color:var(--accent);font-weight:700;padding:0.7rem 1.15rem;border-radius:8px;border:1px solid var(--border);">API vs. GPU Calculator</a>
-        </div>
-      </div>
-    ) : (
-      <div>
-        <h2 style="margin-top:0;font-size:1.2rem;">Hardware &amp; Deployment Options for {entry.hw_name}</h2>
-        <p style="color:var(--muted);">Your <strong>{entry.hw_name}</strong> runs {entry.model_name} locally at ~<strong>{entry.est_tokens_per_sec} tokens/sec</strong>.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.85rem;">
-          <a href={amazonSearchUrl} target="_blank" rel="nofollow sponsored noopener" style="background:var(--green);color:#0b0f17;font-weight:800;padding:0.7rem 1.15rem;border-radius:8px;">Check {entry.hw_name} Price on Amazon &rarr;</a>
-          <a href="https://pricing.godedi.net/" target="_blank" rel="noopener" style="background:#1e293b;color:var(--text);font-weight:700;padding:0.7rem 1.15rem;border-radius:8px;border:1px solid var(--border);">Compare Local vs. Cloud API Cost &rarr;</a>
-        </div>
-      </div>
-    )}
-  </section>
-
-  <section class="card">
-    <h2 style="margin-top:0;font-size:1.2rem;">VRAM Requirements by Quantization Level</h2>
-    <table style="width:100%;border-collapse:collapse;font-size:0.92rem;">
-      <thead><tr style="border-bottom:1px solid var(--border);text-align:left;color:var(--muted);"><th style="padding:0.55rem;">Format</th><th style="padding:0.55rem;">Weights</th><th style="padding:0.55rem;">Total (8K)</th><th style="padding:0.55rem;">Fits?</th></tr></thead>
-      <tbody>
-        {quantRows.map((row) => (
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem;font-weight:600;">{row.label}</td>
-            <td style="padding:0.55rem;">{row.w} GB</td>
-            <td style="padding:0.55rem;">{row.tot} GB</td>
-            <td style={`padding:0.55rem;font-weight:700;color:${row.fits ? 'var(--green)' : 'var(--red)'};`}>{row.fits ? 'Yes' : 'No (OOM)'}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <h3 style="margin-top:1.4rem;font-size:1.05rem;">Ready-to-Run CLI Commands</h3>
-    <pre style="background:#0b0f17;padding:0.75rem;border-radius:8px;border:1px solid var(--border);overflow-x:auto;"><code>{entry.cli_ollama_cmd}</code></pre>
-    <pre style="background:#0b0f17;padding:0.75rem;border-radius:8px;border:1px solid var(--border);overflow-x:auto;"><code>{entry.cli_llamacpp_cmd}</code></pre>
-  </section>
-
-  {related.length > 0 && (
-    <section class="card">
-      <h2 style="margin-top:0;font-size:1.15rem;">More LLM Benchmarks for {entry.hw_name}</h2>
-      <ul style="margin:0;padding-left:1.2rem;">
-        {related.map((r) => (<li style="margin-bottom:0.4rem;"><a href={`/${r.slug}/`}>{r.hw_name} + {r.model_name}</a> &mdash; <span style="color:var(--muted);">{r.verdict_label} ({r.total_req_8k_q4_gb} GB)</span></li>))}
-      </ul>
-    </section>
-  )}
-
-  <script>
-    const box = document.getElementById('ctxCalculator');
-    const out = document.getElementById('ctxResult');
-    const btns = Array.from(document.querySelectorAll('.ctx-btn')) as HTMLButtonElement[];
-    if (box && out) {
-      const weight = parseFloat(box.dataset.weight || '0');
-      const kv8k = parseFloat(box.dataset.kv8k || '0');
-      const vram = parseFloat(box.dataset.vram || '0');
-      btns.forEach((btn) => btn.addEventListener('click', () => {
-        const ctx = parseInt(btn.dataset.ctx || '8192', 10);
-        btns.forEach((b) => { b.style.background = b === btn ? 'var(--accent)' : '#0b0f17'; b.style.color = b === btn ? '#0b0f17' : 'var(--text)'; });
-        const kv = +(kv8k * (ctx / 8192)).toFixed(2);
-        const total = +(weight + kv + 0.85).toFixed(2);
-        const ok = vram >= total;
-        out.innerHTML = `At <strong>${ctx / 1024}K context</strong>: ${weight} GB weights + ${kv} GB KV-cache + 0.85 GB OS = <strong>${total} GB</strong> (<span style="color:${ok ? 'var(--green)' : 'var(--red)'};font-weight:700;">${ok ? 'Fits in VRAM' : 'Exceeds VRAM — use Cloud GPU or lower context'}</span>).`;
+      At <strong>8K context</strong>: {entry.vram_q4_km_gb} GB weights + {entry.kv_cache_8k_gb} GB KV-cache + 0.85 GB OS = <strong>{entry.total_req_8k_q4_gb} GB</strong> ({entry.vram_gb >= entry.total_req_8k_q4_gb ? 'Fits in VRAM' : `Exceeds VRAM &mdash; run on <a href="${rp}" target="_blank" rel="nofollow noopener" style="color:var(--accent);text-decoration:underline;">RunPod</a> / <a href="${va}" target="_blank" rel="nofollow noopener" style="color:var(--accent);text-decoration:underline;">Vast.ai</a> or lower context`}</span>).`;
       }));
     }
   </script>

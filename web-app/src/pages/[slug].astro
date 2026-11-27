@@ -53,7 +53,7 @@ const faqSchema = {
     </div>
   </section>
 
-  <section class="card" id="ctxCalculator" data-weight={entry.vram_q4_km_gb} data-kv8k={entry.kv_cache_8k_gb} data-vram={entry.vram_gb}>
+  <section class="card" id="ctxCalculator" data-weight={entry.vram_q4_km_gb} data-kv8k={entry.kv_cache_8k_gb} data-vram={entry.vram_gb} data-runpod={runpodUrl} data-vast={vastUrl}>
     <h2 style="margin-top:0;font-size:1.2rem;">Interactive Context Length &amp; KV-Cache Calculator</h2>
     <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;">
       {[4096, 8192, 16384, 32768, 65536].map((ctx) => (
@@ -84,6 +84,7 @@ const faqSchema = {
           <a href={amazonSearchUrl} target="_blank" rel="nofollow sponsored noopener" style="background:var(--green);color:#0b0f17;font-weight:800;padding:0.7rem 1.15rem;border-radius:8px;">Check {entry.hw_name} Price on Amazon &rarr;</a>
           <a href="https://pricing.godedi.net/" target="_blank" rel="noopener" style="background:#1e293b;color:var(--text);font-weight:700;padding:0.7rem 1.15rem;border-radius:8px;border:1px solid var(--border);">Compare Local vs. Cloud API Cost &rarr;</a>
         </div>
+          <p style="margin:0.85rem 0 0;font-size:0.84rem;color:var(--muted);">Need 32K+ context or zero upfront hardware cost? Spin up an on-demand GPU on <a href={runpodUrl} target="_blank" rel="nofollow noopener">RunPod</a> or <a href={vastUrl} target="_blank" rel="nofollow noopener">Vast.ai</a>.</p>
       </div>
     )}
   </section>
@@ -125,13 +126,15 @@ const faqSchema = {
       const weight = parseFloat(box.dataset.weight || '0');
       const kv8k = parseFloat(box.dataset.kv8k || '0');
       const vram = parseFloat(box.dataset.vram || '0');
+      const rp = box.dataset.runpod || 'https://www.runpod.io/console/gpu-cloud';
+      const va = box.dataset.vast || 'https://cloud.vast.ai/';
       btns.forEach((btn) => btn.addEventListener('click', () => {
         const ctx = parseInt(btn.dataset.ctx || '8192', 10);
         btns.forEach((b) => { b.style.background = b === btn ? 'var(--accent)' : '#0b0f17'; b.style.color = b === btn ? '#0b0f17' : 'var(--text)'; });
         const kv = +(kv8k * (ctx / 8192)).toFixed(2);
         const total = +(weight + kv + 0.85).toFixed(2);
         const ok = vram >= total;
-        out.innerHTML = `At <strong>${ctx / 1024}K context</strong>: ${weight} GB weights + ${kv} GB KV-cache + 0.85 GB OS = <strong>${total} GB</strong> (<span style="color:${ok ? 'var(--green)' : 'var(--red)'};font-weight:700;">${ok ? 'Fits in VRAM' : 'Exceeds VRAM &mdash; use Cloud GPU or lower context'}</span>).`;
+        out.innerHTML = `At <strong>${ctx / 1024}K context</strong>: ${weight} GB weights + ${kv} GB KV-cache + 0.85 GB OS = <strong>${total} GB</strong> (<span style="color:${ok ? 'var(--green)' : 'var(--red)'};font-weight:700;">${ok ? 'Fits in VRAM' : `Exceeds VRAM &mdash; run on <a href="${rp}" target="_blank" rel="nofollow noopener" style="color:var(--accent);text-decoration:underline;">RunPod</a> / <a href="${va}" target="_blank" rel="nofollow noopener" style="color:var(--accent);text-decoration:underline;">Vast.ai</a> or lower context`}</span>).`;
       }));
     }
   </script>

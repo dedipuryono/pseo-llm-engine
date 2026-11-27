@@ -1,0 +1,60 @@
+﻿---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import catalog from '../data/llm_catalog.json';
+---
+<BaseLayout
+  title="Local LLM VRAM & Token Speed Compatibility Matrix (2026)"
+  description="Check exact VRAM requirements, KV-cache overhead, and tokens/sec benchmarks for NVIDIA RTX, AMD Radeon, and Apple Silicon running DeepSeek, Qwen, Llama, and Gemma."
+  canonicalPath="/"
+>
+  <section class="card">
+    <h1 style="margin-top:0;font-size:1.85rem;">Local LLM VRAM &amp; Token Speed Matrix</h1>
+    <p style="color:var(--muted);max-width:760px;">
+      Deterministic memory and throughput benchmarks calculated from official Hugging Face model architectures (<code>config.json</code>), GQA KV-cache dimensions, and real hardware memory bandwidth.
+    </p>
+    <input
+      id="matrixSearch"
+      type="search"
+      placeholder="Filter by GPU or Model (e.g., RTX 3060, M4 Pro, DeepSeek, Qwen 32B)..."
+      style="width:100%;padding:0.8rem 1rem;border-radius:8px;border:1px solid var(--border);background:#0b0f17;color:var(--text);font-size:1rem;margin-top:0.5rem;"
+    />
+  </section>
+
+  <div id="matrixGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;">
+    {catalog.map((item) => {
+      const isCloud = item.monetization_route === 'CLOUD_GPU_CTA';
+      const badgeColor = isCloud ? 'var(--red)' : 'var(--green)';
+      return (
+        <a
+          class="card matrix-item"
+          data-search={`${item.hw_name} ${item.model_name} ${item.model_family} ${item.verdict_label}`.toLowerCase()}
+          href={`/${item.slug}/`}
+          style="display:block;margin-bottom:0;text-decoration:none;color:inherit;"
+        >
+          <div style={`font-size:0.78rem;font-weight:700;color:${badgeColor};margin-bottom:0.35rem;`}>
+            {item.verdict_label}
+          </div>
+          <div style="font-weight:700;font-size:1.05rem;margin-bottom:0.4rem;">
+            {item.hw_name} + {item.model_name}
+          </div>
+          <div style="font-size:0.86rem;color:var(--muted);">
+            8K Q4 VRAM: <strong style="color:var(--text);">{item.total_req_8k_q4_gb} GB</strong> &bull;
+            Speed: <strong style="color:var(--text);">{item.est_tokens_per_sec > 0 ? `${item.est_tokens_per_sec} tok/s` : 'OOM'}</strong>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+
+  <script>
+    const input = document.getElementById('matrixSearch') as HTMLInputElement | null;
+    const cards = Array.from(document.querySelectorAll('.matrix-item')) as HTMLElement[];
+    input?.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      cards.forEach((el) => {
+        const hay = el.dataset.search || '';
+        el.style.display = !q || hay.includes(q) ? 'block' : 'none';
+      });
+    });
+  </script>
+</BaseLayout>

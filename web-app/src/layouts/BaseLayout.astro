@@ -1,0 +1,100 @@
+﻿---
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+}
+
+const { title, description, canonicalPath = '/' } = Astro.props;
+const canonicalURL = new URL(canonicalPath, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <style is:global>
+      :root {
+        --bg: #0b0f17;
+        --card: #131a26;
+        --border: #233047;
+        --text: #e6edf7;
+        --muted: #93a4bf;
+        --accent: #38bdf8;
+        --green: #22c55e;
+        --amber: #f59e0b;
+        --red: #ef4444;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .disclosure {
+        background: #0f1622;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.78rem;
+        padding: 0.45rem 1rem;
+        text-align: center;
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+      .brand { font-weight: 800; font-size: 1.15rem; color: var(--text); letter-spacing: -0.02em; }
+      .brand span { color: var(--accent); }
+      nav { display: flex; gap: 1.25rem; font-size: 0.9rem; }
+      main { max-width: 1120px; margin: 0 auto; padding: 1.75rem 1.25rem 3.5rem; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.35rem;
+        margin-bottom: 1.25rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 2rem 1.25rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="disclosure">
+      Disclosure: As an Amazon Associate and cloud infrastructure partner, GoDedi Labs earns from qualifying purchases and referrals at no extra cost to you.
+    </div>
+    <header>
+      <a class="brand" href="/">LLM<span>VRAM</span>.godedi.net</a>
+      <nav>
+        <a href="/">Compatibility Matrix</a>
+        <a href="/methodology/">VRAM Methodology</a>
+        <a href="https://pricing.godedi.net/" target="_blank" rel="noopener">API Cost Calculator</a>
+        <a href="https://godedi.net/" target="_blank" rel="noopener">GoDedi Blog</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <p>Deterministic Local LLM VRAM & Token Throughput Matrix by <strong>GoDedi Labs</strong> &bull; <a href="/methodology/">Calculation Formula</a> &bull; <a href="https://pricing.godedi.net/">LLM API Pricing Tool</a></p>
+    </footer>
+  </body>
+</html>

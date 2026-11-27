@@ -1,0 +1,19 @@
+﻿---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="VRAM & Token Throughput Calculation Methodology | LLMVRAM"
+  description="How we calculate deterministic GGUF weight memory, GQA FP16 KV-cache size, and memory-bandwidth-bound tokens per second for local LLMs."
+  canonicalPath="/methodology/"
+>
+  <article class="card">
+    <h1 style="margin-top:0;">Deterministic VRAM &amp; Speed Methodology</h1>
+    <p>Every benchmark on <strong>llm.godedi.net</strong> is computed deterministically from each model's official <code>config.json</code> on Hugging Face rather than synthetic guesses:</p>
+    <ul>
+      <li><strong>Quantized Model Weights:</strong> Calculated using empirical GGUF bit-per-weight ratios (<code>Q4_K_M ≈ 0.61 GB/B</code>, <code>Q5_K_M ≈ 0.73 GB/B</code>, <code>Q8_0 ≈ 1.07 GB/B</code>, <code>FP16 = 2.00 GB/B</code>).</li>
+      <li><strong>Grouped-Query Attention (GQA) KV-Cache:</strong> Computed per token via <code>2 × hidden_layers × num_key_value_heads × head_dim × 2 bytes (FP16)</code>, accounting for dramatic memory savings in modern GQA models like Qwen 3 and Llama 3.</li>
+      <li><strong>Runtime &amp; OS Buffer:</strong> Adds <code>0.85 GB</code> for CUDA/Metal context buffers and display compositor overhead.</li>
+      <li><strong>Generation Throughput (Tokens/sec):</strong> Autoregressive LLM decoding is memory-bandwidth bound. For dense and Mixture-of-Experts (MoE) models, throughput is derived from <code>(Hardware Bandwidth GB/s ÷ Active Parameter Bytes) × 0.68</code> real-world kernel efficiency.</li>
+    </ul>
+  </article>
+</BaseLayout>

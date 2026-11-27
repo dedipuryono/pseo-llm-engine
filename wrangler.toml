@@ -1,4 +1,4 @@
-﻿name = "pseo-llm-engine"
+name = "pseo-llm-engine"
 compatibility_date = "2026-11-01"
 
 [[d1_databases]]

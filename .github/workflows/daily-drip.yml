@@ -1,4 +1,4 @@
-﻿name: Daily LLM Matrix Drip Publisher
+name: Daily LLM Matrix Drip Publisher
 
 on:
   schedule:
